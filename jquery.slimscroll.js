@@ -18,6 +18,9 @@
         // height in pixels of the visible scroll area
         height : '250px',
 
+        // The maximum height the scrollable area will grow.   This overrides the height option.
+        maxHeight: null,
+
         // width in pixels of the scrollbar and rail
         size : '7px',
 
@@ -150,25 +153,46 @@
             }
         }
 
-        // optionally set height to the parent's height
-        o.height = (o.height == 'auto') ? me.parent().height() : o.height;
+        var maxHeight,
+            height;
+
+        if(o.maxHeight !== null) {
+          maxHeight = o.maxHeight;
+        } else {
+          // optionally set height to the parent's height
+          height = (o.height == 'auto') ? me.parent().height() : o.height;
+        }
+
+        var wrapperCss = {
+            position: 'relative',
+            overflow: 'hidden',
+            width: o.width
+        };
+
+        if(maxHeight) {
+          wrapperCss["max-height"] = maxHeight;
+        } else {
+          wrapperCss["height"] = height;
+        }
 
         // wrap content
         var wrapper = $(divS)
           .addClass(o.wrapperClass)
-          .css({
-            position: 'relative',
-            overflow: 'hidden',
-            width: o.width,
-            height: o.height
-          });
+          .css(wrapperCss);
+
+        var meCss = {
+          overflow: 'hidden',
+          width: o.width
+        };
+
+        if(maxHeight) {
+          meCss["max-height"] = maxHeight;
+        } else {
+          meCss["height"] = height;
+        }
 
         // update style for the div
-        me.css({
-          overflow: 'hidden',
-          width: o.width,
-          height: o.height
-        });
+        me.css(meCss);
 
         // create scrollbar rail
         var rail = $(divS)
